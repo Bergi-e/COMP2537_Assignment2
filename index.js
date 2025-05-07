@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 // secret configs
-const MONGODB_DB             = process.env.MONGODB_DATABASE;
+const MONGODB_DATABASE            = process.env.MONGODB_DATABASE;
 const NODE_SESSION_SECRET    = process.env.NODE_SESSION_SECRET;
 const MONGO_SESSION_SECRET   = process.env.MONGO_SESSION_SECRET;
 const PORT                   = process.env.PORT || 3000;
@@ -24,7 +24,7 @@ app.use(express.static('public'))
 // Async wrapper
 (async () => {
   await database.connect()
-  const db       = database.db(MONGODB_DB);
+  const db       = database.db(MONGODB_DATABASE);
   const usersCol = db.collection('users')
 
   // Session store config
@@ -140,6 +140,5 @@ app.use(express.static('public'))
   });
 
   // RUN THE SERVER!!!!!!
-  const port = process.env.PORT || 3000
-  app.listen(port, () => console.log(`Listening on port ${port}`))
+  app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
 })()
