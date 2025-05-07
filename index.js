@@ -1,25 +1,28 @@
 require('dotenv').config()
 
-// secret configs
-const MONGODB_DATABASE            = process.env.MONGODB_DATABASE;
-const NODE_SESSION_SECRET    = process.env.NODE_SESSION_SECRET;
-const MONGO_SESSION_SECRET   = process.env.MONGO_SESSION_SECRET;
-const PORT                   = process.env.PORT || 3000;
-
-const saltRounds = 12; // bcrypt
-const sessionTTL = 1 * 60 * 60 // (1 hour * 60 mins * 60 secs = 1 hour total)
-
 const express    = require('express')
 const session    = require('express-session')
 const MongoStore = require('connect-mongo')
 const bcrypt     = require('bcrypt')
 const Joi        = require('joi') // Joi used for validating user inputs
 const { database } = require('./databaseConnection')
+const saltRounds = 12; // bcrypt
+
+// secret environment variables
+const {
+  MONGODB_DATABASE,
+  MONGODB_SESSION_SECRET,
+  NODE_SESSION_SECRET,
+  PORT
+} = process.env;
+
+const app = express()
+const sessionTTL = 1 * 60 * 60 // (1 hour * 60 mins * 60 secs = 1 hour total)
+const port = PORT || 3000;
 
 // App initialization stuff
-const app = express()
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 // Async wrapper
 (async () => {
@@ -36,7 +39,7 @@ app.use(express.static('public'))
       store: MongoStore.create({
         client: database,
         dbName: MONGODB_DATABASE,
-        crypto: { secret: MONGO_SESSION_SECRET },
+        crypto: { secret: MONGODB_SESSION_SECRET },
         ttl: sessionTTL
     })
   }))
@@ -140,5 +143,5 @@ app.use(express.static('public'))
   });
 
   // RUN THE SERVER!!!!!!
-  app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+  app.listen(port, () => console.log(`Listening on port ${port}`))
 })()
