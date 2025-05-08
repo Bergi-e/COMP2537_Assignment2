@@ -17,8 +17,11 @@ const {
 } = process.env;
 
 const app = express()
-const sessionTTL = 1 * 60 * 60 // (1 hour * 60 mins * 60 secs = 1 hour total)
+const expireTime = 1 * 60 * 60 // (1 hour * 60 mins * 60 secs = 1 hour total)
 const port = PORT || 3000;
+
+app.set('view engine', 'ejs');
+app.set('views', Path2D.join(__dirname, 'views'))
 
 // App initialization stuff
 app.use(express.urlencoded({ extended: true }))
@@ -40,7 +43,7 @@ app.use(express.static('public'));
         client: database,
         dbName: MONGODB_DATABASE,
         crypto: { secret: MONGODB_SESSION_SECRET },
-        ttl: sessionTTL
+        ttl: expireTime
     })
   }))
 
