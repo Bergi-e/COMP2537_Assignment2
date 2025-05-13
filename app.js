@@ -6,6 +6,7 @@ const MongoStore = require('connect-mongo')
 const bcrypt     = require('bcrypt')
 const Joi        = require('joi') // Joi used for validating user inputs
 const { database } = require('./databaseConnection')
+const { ObjectId } = require('mongodb')
 const saltRounds = 12; // bcrypt
 
 // secret environment variables
@@ -143,13 +144,31 @@ app.use(express.static('public'));
   // Admin page
   app.get('/admin', isAuthenticated, isAdmin, async (req, res) => {
 
-  const allUsers = await usersCol.find().toArray();
-  res.render('admin', {
-    user: req.session.user,
-    users: allUsers
+    const allUsers = await usersCol.find().toArray();
+    res.render('admin', {
+      user: req.session.user,
+      users: allUsers
+    });
   });
-});
 
+  // Promote a user
+  app.get('/admin/promote', isAuthenticated, isAdmin, async (req, res) => {
+    const id = req.query.id;
+    if (!id) {
+      return res.redirect('/admin');
+    }
+    await usersCol.updateOne({ _id: new ObjectId(id) }, { $set: { user_type: 'admin' } });
+    res.redirect('/admin');
+  })
+
+  app.get('/admin/demote', isAuthenticated, isAdmin, async (req, res) => {
+    const id = req.query.id;
+    if (!id) {
+      return res.redirect('/admin');
+    }
+    await usersCol.updateOne({ _id: new ObjectId(id) }, { $set: { user_type: 'user' } });
+    res.redirect('/admin');
+  })
 
   // 404 handling
   app.use((req, res) => {
@@ -158,4 +177,4 @@ app.use(express.static('public'));
 
   // RUN THE SERVER!!!!!!
   app.listen(port, () => console.log(`Listening on port ${port}`))
-})()
+})();
