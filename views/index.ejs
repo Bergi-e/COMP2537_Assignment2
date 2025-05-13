@@ -1,12 +1,16 @@
 <%- include('templates/header') %>
 
-<!-- Moved the user checking into here! -->
+<div class="p-5 mb-4 rounded-3">
+  <div class="container-fluid py-5">
 <% if (user) { %>
-  <h1>Hello, <%= user.name %></h1>
-  <a href="/members">Members Area</a> ||| <a href="/logout">Log out</a>
+  <h1 class="display-5 fw-bold">Hello, <%= user.name %></h1>
+  <a class="btn btn-primary btn-lg me-2" href="/members">Members Area</a> 
+  <a class="btn btn-primary btn-lg me-2" href="/logout">Log out</a>
 <% } else { %>
   <h1>Welcome!</h1>
-  <a href="/signup">Sign up!</a> ||| <a href="/login">Log in!</a>
+  <a class="btn btn-outline-secondary btn-lg"href="/signup">Sign up!</a> 
+  <a class="btn btn-outline-secondary btn-lg" href="/login">Log in!</a>
 <% } %>
-
+  </div>
+</div>
 <%- include('templates/footer') %>
