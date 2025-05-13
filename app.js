@@ -126,19 +126,25 @@ app.use(express.static('public'));
     req.session.destroy(() => res.redirect('/'))
   });
 
-  // Admin page
-  app.get('/admin', async (req, res) => {
-    if (!req.session.user) {
-      return res.redirect('/login');
-    }
+  // Middleware functions for admin permissions
 
-    if (req.session.user.user_type !== 'admin') {
-      return res.status(403).render('403', { user: req.session.user });
-    }
-  
+  // Checks if the user is authenticated
+  function isAuthenticated(req, res, next) {
+  if (req.session && req.session.user) return next();
+  res.redirect('/login');
+  }
+
+  // Checks if the user is an admin
+  function isAdmin(req, res, next) {
+    if (req.session.user && req.session.user.user_type === 'admin') return next();
+    res.status(403).render('403', { title: 'Forbidden' });
+  }
+
+  // Admin page
+  app.get('/admin', isAuthenticated, isAdmin, async (req, res) => {
 
   const allUsers = await usersCol.find().toArray();
-  return res.render('admin', {
+  res.render('admin', {
     user: req.session.user,
     users: allUsers
   });
