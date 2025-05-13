@@ -74,7 +74,7 @@ app.use(express.static('public'));
     }
 
     const hashed = await bcrypt.hash(value.password, saltRounds)
-    await usersCol.insertOne({ name: value.name, email: value.email, password: hashed })
+    await usersCol.insertOne({ name: value.name, email: value.email, password: hashed, user_type: 'user' })
     req.session.user = { name: value.name, email: value.email }
     res.redirect('/members')
   })
@@ -100,7 +100,11 @@ app.use(express.static('public'));
 
     const user = await usersCol.findOne({ email: value.email });
     if (user && await bcrypt.compare(value.password, user.password)) {
-      req.session.user = { name: user.name, email: user.email };
+      req.session.user = { 
+        name: user.name, 
+        email: user.email, 
+        user_type: user.user_type
+      };
       return res.redirect('/members');
     }
     return res.render('login', { error: 'User and password not found.'});
@@ -121,6 +125,25 @@ app.use(express.static('public'));
   app.get('/logout', (req, res) => {
     req.session.destroy(() => res.redirect('/'))
   });
+
+  // Admin page
+  app.get('/admin', async (req, res) => {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+
+    if (req.session.user.user_type !== 'admin') {
+      return res.status(403).render('403', { user: req.session.user });
+    }
+  
+
+  const allUsers = await usersCol.find().toArray();
+  return res.render('admin', {
+    user: req.session.user,
+    users: allUsers
+  });
+});
+
 
   // 404 handling
   app.use((req, res) => {
