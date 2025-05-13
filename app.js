@@ -54,16 +54,7 @@ app.use(express.static('public'));
 
   // Signup page
   app.get('/signup', (req, res) => {
-    /** OLD
-    res.send(`<form method="POST" action="/signup">
-      Name: <input name="name"/><br/>
-      Email: <input name="email"/><br/>
-      Password: <input name="password" type="password"/><br/>
-      <button>Sign Up</button>
-      </form>
-      `);
-      */
-    res.render('signup');
+    res.render('signup', { error: null });
   });
 
   // Signup handling
@@ -79,8 +70,7 @@ app.use(express.static('public'));
     const { error, value } = schema.validate(req.body);
 
     if (error) {
-      // OLD return res.send(`Invalid input: ${error.details[0].message}. <a href="/signup">Go Back!!</a>`)
-      res.render('signup', { error: 'Invalid input: ${error.details[0].message}' });
+      return res.render('signup', { error: `Invalid input: ${error.details[0].message}` });
     }
 
     const hashed = await bcrypt.hash(value.password, saltRounds)
@@ -91,16 +81,7 @@ app.use(express.static('public'));
 
   // Login page
   app.get('/login', (req, res) => {
-    res.render('login');
-
-    /** OLD:
-      res.send(`<form method="POST" action="/login">
-      Email: <input name="email"/><br/>
-      Password: <input name="password" type="password"/><br/>
-      <button>Log In</button>
-      </form>
-      `);
-      */
+    res.render('login', { error: null });
   });
 
   // Login handling
@@ -112,9 +93,9 @@ app.use(express.static('public'));
       password: Joi.string().required() 
     });
     const { error, value } = schema.validate(req.body);
+
     if (error) {
-      // OLD: return res.send(`Invalid input: ${error.details[0].message}. <a href="/login">Back</a>`)
-      res.render('login', { error: 'Invalid input: ${error.details[0].message}' });
+      return res.render('login', { error: `Invalid input: ${error.details[0].message}` });
     }
 
     const user = await usersCol.findOne({ email: value.email });
@@ -122,7 +103,6 @@ app.use(express.static('public'));
       req.session.user = { name: user.name, email: user.email };
       return res.redirect('/members');
     }
-    // OLD: res.send('User and password not found. <a href="/login">Try again!</a>')
     return res.render('login', { error: 'User and password not found.'});
   })
 
@@ -131,14 +111,10 @@ app.use(express.static('public'));
     if (!req.session.user) return res.redirect('/');
     const images = ['images/photo1.jpg','images/photo2.jpg','images/photo3.jpg']
     const img = images[Math.floor(Math.random() * images.length)]
-    /** OLD:
-    res.send(
-      `<h1>Hello, ${req.session.user.name}</h1>` +
-      `<img src="/${img}" style="max-width:300px;"/><br/>` +
-      `<a href="/logout">Log out</a>`
-    );
-    */
-   res.render('members');
+    res.render('members', {
+      user: req.session.user,
+      img
+   });
   });
 
   // Logout action

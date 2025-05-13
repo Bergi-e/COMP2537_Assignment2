@@ -1,0 +1,13 @@
+<%- include('templates/header') %>
+
+<% if (error) { %>
+  <p style="color: red;"><%= error %></p>
+<% } %>
+
+<form method="POST" action="/login">
+  Email: <input name="email" /><br/>
+  Password: <input name="password" type="password" /><br/>
+  <button type="submit">Log In</button>
+</form>
+
+<%- include('templates/footer') %>
