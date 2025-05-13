@@ -161,6 +161,7 @@ app.use(express.static('public'));
     res.redirect('/admin');
   })
 
+  // Demote a user
   app.get('/admin/demote', isAuthenticated, isAdmin, async (req, res) => {
     const id = req.query.id;
     if (!id) {
