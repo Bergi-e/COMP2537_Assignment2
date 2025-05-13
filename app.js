@@ -48,21 +48,9 @@ app.use(express.static('public'));
 
   // Home page
   app.get('/', (req, res) => {
-    if (req.session.user) {
-      /** OLD 
-      res.send(`<h1>Hello, ${req.session.user.name}</h1>` +
-        `<a href="/members">Members Area</a> | <a href="/logout">Log out...</a>`)
-        */
-       res.render('index', { user: req.session.user });
-    } else {
-      /** OLD 
-      res.send(
-        `<h1>Welcome!</h1>` +
-        `<a href="/signup">Sign up!</a> ||| <a href="/login">Log in!</a>`);
-      */
-     res.render('index');
-      }
+    res.render('index', { user: req.session.user });
   });
+
 
   // Signup page
   app.get('/signup', (req, res) => {
@@ -160,7 +148,7 @@ app.use(express.static('public'));
 
   // 404 handling
   app.use((req, res) => {
-    res.status(404).render('404 Not Found')
+    res.status(404).render('404')
   });
 
   // RUN THE SERVER!!!!!!
