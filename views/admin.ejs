@@ -12,20 +12,7 @@
       </tr>
     </thead>
     <tbody>
-      <% users.forEach(u => { %>
-        <tr>
-          <td><%= u.name %></td>
-          <td><%= u.email %></td>
-          <td><%= u.user_type %></td>
-          <td class="text-end">
-            <% if (u.user_type === 'user') { %>
-              <a href="/admin/promote?id=<%= u._id %>" class="btn btn-danger btn-sm">Promote</a>
-            <% } else { %>
-              <a href="/admin/demote?id=<%= u._id %>" class="btn btn-success btn-sm">Demote</a>
-            <% } %>
-          </td>
-        </tr>
-      <% }) %>
+      <%- include('templates/user', { users: users }) %>
     </tbody>
   </table>
 </div>
